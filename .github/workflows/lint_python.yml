@@ -12,12 +12,11 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install codespell flake8 isort mypy pytest pyupgrade safety
+      - run: pip install codespell flake8 isort pytest pyupgrade safety
       - run: codespell --quiet-level=2 || true  # --ignore-words-list="" --skip=""
       - run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
       - run: isort --check-only --profile black . || true
       - run: pip install -r requirements.txt || true
-      - run: mypy --ignore-missing-imports . || true
       - run: pytest . || true
       - run: pytest --doctest-modules . || true
       - run: shopt -s globstar && pyupgrade --py36-plus **/*.py || true
@@ -25,6 +24,7 @@ jobs:
       # Legacy Python stops here...
       - if: matrix.python-version >= 3.6
         run: |
-          pip install bandit black 
+          pip install bandit black mypy
           bandit -r . || true
           black --check . || true
+          mypy --ignore-missing-imports . || true
